@@ -107,19 +107,49 @@
     padding: 20px 14px 14px;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 18px 40px rgba(0,0,0,0.4);
   }
+  .side-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 4px 12px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.14);
+  }
   .sidebar h2 {
     font-family: var(--serif);
     font-weight: 600;
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    text-align: center;
     color: #fff;
-    padding-bottom: 14px;
-    margin-bottom: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.14);
   }
-  .sidebar nav { display: flex; flex-direction: column; gap: 8px; }
+  .fav-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--gold);
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(240, 196, 106, 0.4);
+    background: rgba(240, 196, 106, 0.08);
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .fav-pill:hover, .fav-pill:focus-visible {
+    background: rgba(240, 196, 106, 0.18);
+    outline: none;
+  }
+  .fav-pill.active {
+    background: linear-gradient(180deg, rgba(255,226,160,0.32) 0%, rgba(240,196,106,0.12) 100%);
+    border-color: rgba(240, 196, 106, 0.7);
+    box-shadow: inset 0 1px 0 rgba(255,240,200,0.5), 0 0 16px rgba(240,196,106,0.25);
+    color: #fff3d6;
+  }
+  .sidebar nav { display: flex; flex-direction: column; gap: 4px; }
   .cat {
     display: flex;
     justify-content: space-between;
@@ -131,7 +161,7 @@
     font-weight: 400;
     letter-spacing: 0.03em;
     color: var(--text);
-    padding: 12px 16px;
+    padding: 9px 14px;
     border-radius: 999px;
     border: 1px solid transparent;
     background: transparent;
@@ -199,9 +229,10 @@
 
   @media (max-width: 800px) {
     .layout { grid-template-columns: 1fr; gap: 24px; padding: 0 16px 64px; }
-    .sidebar { position: static; padding: 14px 12px; }
+    .sidebar { position: static; padding: 12px; display: flex; align-items: center; gap: 10px; }
+    .side-head { padding: 0; margin: 0; border: 0; flex: 0 0 auto; }
     .sidebar h2 { display: none; }
-    .sidebar nav { flex-direction: row; overflow-x: auto; padding-bottom: 2px; }
+    .sidebar nav { flex: 1; min-width: 0; flex-direction: row; overflow-x: auto; padding-bottom: 2px; }
     .cat { width: auto; white-space: nowrap; flex: 0 0 auto; }
     .cat-divider { width: 1px; height: auto; margin: 4px 2px; flex: 0 0 1px; }
   }
@@ -409,7 +440,10 @@
 
 <div class="layout">
   <aside class="sidebar">
-    <h2>Browse</h2>
+    <div class="side-head">
+      <h2>Browse</h2>
+      <button type="button" class="fav-pill" id="favBtn"></button>
+    </div>
     <nav id="cats"></nav>
   </aside>
   <main id="grid"></main>
@@ -521,6 +555,7 @@ function updatedText(mod) {
 }
 
 const catsNav = document.getElementById("cats");
+const favBtn = document.getElementById("favBtn");
 const ALL = "All Releases";
 const RECENT = "Recently Updated";
 const FAV = "Favourites";
@@ -577,10 +612,15 @@ function addCatButton(name, count) {
 }
 
 function renderSidebar() {
+  const favCount = mods.filter(m => favs.has(m.name)).length;
+  favBtn.textContent = "\u2605 " + favCount;
+  favBtn.className = "fav-pill" + (currentCategory === FAV ? " active" : "");
+  favBtn.title = "Favourites";
+  favBtn.setAttribute("aria-label", "Favourites (" + favCount + ")");
+  favBtn.setAttribute("aria-pressed", String(currentCategory === FAV));
   catsNav.replaceChildren();
   addCatButton(ALL, mods.length);
   addCatButton(RECENT, mods.filter(isRecent).length);
-  addCatButton(FAV, mods.filter(m => favs.has(m.name)).length);
   catsNav.append(el("div", { className: "cat-divider" }));
   categories.forEach(name => {
     addCatButton(name, mods.filter(m => m.category === name).length);
@@ -611,6 +651,12 @@ function renderGrid() {
     grid.append(card);
   });
 }
+
+favBtn.addEventListener("click", () => {
+  currentCategory = currentCategory === FAV ? ALL : FAV;
+  renderSidebar();
+  renderGrid();
+});
 
 renderSidebar();
 renderGrid();
