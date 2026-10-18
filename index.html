@@ -139,6 +139,48 @@
     transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
   }
   .cat .count { color: var(--muted); font-size: 0.85rem; }
+  .item { position: relative; }
+  .fav-badge {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--gold);
+    font-size: 1.05rem;
+    background: rgba(0, 10, 18, 0.5);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(240, 196, 106, 0.5);
+    pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    top: 22px;
+    left: 22px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(0, 10, 18, 0.45);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    font-size: 1.35rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+  .star:hover, .star:focus-visible { transform: scale(1.08); background: rgba(124,198,238,0.3); outline: none; }
+  .star.on {
+    color: var(--gold);
+    border-color: rgba(240, 196, 106, 0.7);
+    background: rgba(240, 196, 106, 0.2);
+  }
   .cat-divider {
     height: 1px;
     margin: 6px 12px;
@@ -481,6 +523,22 @@ function updatedText(mod) {
 const catsNav = document.getElementById("cats");
 const ALL = "All Releases";
 const RECENT = "Recently Updated";
+const FAV = "Favourites";
+
+// Favourites are saved in the visitor's own browser (they don't sync between devices)
+function loadFavs() {
+  try { return new Set(JSON.parse(localStorage.getItem("fav-mods") || "[]")); }
+  catch (e) { return new Set(); }
+}
+function saveFavs() {
+  try { localStorage.setItem("fav-mods", JSON.stringify([...favs])); }
+  catch (e) { /* storage blocked: favourites just won't be remembered */ }
+}
+const favs = loadFavs();
+function toggleFav(mod) {
+  if (favs.has(mod.name)) favs.delete(mod.name); else favs.add(mod.name);
+  saveFavs();
+}
 let currentCategory = ALL;
 
 function isRecent(mod) {
@@ -492,6 +550,7 @@ function isRecent(mod) {
 
 function getShown() {
   if (currentCategory === ALL) return mods;
+  if (currentCategory === FAV) return mods.filter(m => favs.has(m.name));
   if (currentCategory === RECENT) {
     // newest update first; for the same date, the most recently added mod first
     return mods
@@ -521,6 +580,7 @@ function renderSidebar() {
   catsNav.replaceChildren();
   addCatButton(ALL, mods.length);
   addCatButton(RECENT, mods.filter(isRecent).length);
+  addCatButton(FAV, mods.filter(m => favs.has(m.name)).length);
   catsNav.append(el("div", { className: "cat-divider" }));
   categories.forEach(name => {
     addCatButton(name, mods.filter(m => m.category === name).length);
@@ -531,7 +591,9 @@ function renderGrid() {
   grid.replaceChildren();
   const shown = getShown();
   if (shown.length === 0) {
-    const msg = currentCategory === RECENT ? "No recent updates yet." : "Nothing here yet. Coming soon.";
+    const msg = currentCategory === RECENT ? "No recent updates yet."
+      : currentCategory === FAV ? "No favourites yet. Open a mod and press the star."
+      : "Nothing here yet. Coming soon.";
     grid.append(el("div", { className: "empty", textContent: msg }));
     return;
   }
@@ -544,6 +606,7 @@ function renderGrid() {
     );
     if (mod.price) card.append(el("div", { className: "price", textContent: mod.price }));
     if (mod.updated) card.append(el("div", { className: "updated", textContent: updatedText(mod) }));
+    if (favs.has(mod.name)) card.append(el("span", { className: "fav-badge", textContent: "\u2605" }));
     card.addEventListener("click", () => openMod(mod));
     grid.append(card);
   });
@@ -565,7 +628,23 @@ function openMod(mod) {
   if (mod.updated) body.append(el("p", { className: "updated", textContent: updatedText(mod) }));
   if (mod.price) body.append(el("p", { className: "price", textContent: mod.price }));
   body.append(el("p", { className: "desc", textContent: mod.description }), links);
-  modalContent.append(picture(mod.image, mod.name, "modal-img", "modal-img-fallback"), body);
+  const star = el("button", { type: "button" });
+  const paintStar = () => {
+    const on = favs.has(mod.name);
+    star.className = "star" + (on ? " on" : "");
+    star.textContent = on ? "\u2605" : "\u2606";
+    star.setAttribute("aria-pressed", String(on));
+    star.setAttribute("aria-label", on ? "Remove from favourites" : "Add to favourites");
+    star.title = on ? "Remove from favourites" : "Add to favourites";
+  };
+  paintStar();
+  star.addEventListener("click", () => {
+    toggleFav(mod);
+    paintStar();
+    renderSidebar();
+    renderGrid();
+  });
+  modalContent.append(picture(mod.image, mod.name, "modal-img", "modal-img-fallback"), body, star);
   modal.showModal();
 }
 
