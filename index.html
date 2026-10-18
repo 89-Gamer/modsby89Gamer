@@ -3,63 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mods by 89 Gamer</title>
+<title>Mods by 89_Gamer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b1520;
-    --card: #12212f;
-    --card-hover: #17293a;
-    --line: #1f3347;
-    --text: #e6f1fa;
-    --muted: #8fa8bd;
-    --sky: #2f9fd8;
-    --sky-dark: #1d7db0;
-    --paid: #e8a838;
+    --text: #eaf4fb;
+    --muted: #9db8cc;
+    --sky: #7cc6ee;
+    --gold: #f0c46a;
+    --glass: rgba(255, 255, 255, 0.07);
+    --glass-line: rgba(255, 255, 255, 0.16);
+    --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --sans: "Jost", "Segoe UI", system-ui, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { background: #000; }
   body {
-    background: var(--bg);
     color: var(--text);
-    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
-    line-height: 1.5;
+    font-family: var(--sans);
+    font-weight: 300;
+    line-height: 1.6;
     min-height: 100vh;
+    position: relative;
   }
+  /* Gradient background: dark sky blue at the top, black at the bottom */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, #0f5f90 0%, #0a4468 22%, #052437 50%, #020b12 78%, #000 100%);
+  }
+
+  /* Title */
   header {
     text-align: center;
-    padding: 56px 20px 32px;
+    padding: 80px 20px 48px;
   }
   header h1 {
-    font-size: clamp(2rem, 6vw, 3rem);
-    font-weight: 700;
-    color: var(--sky);
-    letter-spacing: 0.5px;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2.4rem, 8vw, 4.4rem);
+    letter-spacing: 0.14em;
+    line-height: 1.3;
+    padding-bottom: 0.1em;
+    background: linear-gradient(180deg, #ffffff 0%, #a9dcf7 60%, #6bb8e3 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 4px 24px rgba(124, 198, 238, 0.35));
+  }
+  .divider {
+    width: min(220px, 50%);
+    height: 1px;
+    margin: 22px auto 18px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
   }
   header p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.2rem;
     color: var(--muted);
-    margin-top: 8px;
+    letter-spacing: 0.04em;
   }
+
+  /* Grid of mods */
   main {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 0 20px 64px;
+    padding: 0 24px 80px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 28px;
   }
   .item {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    overflow: hidden;
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid var(--glass-line);
+    border-radius: 22px;
+    padding: 10px 10px 8px;
     cursor: pointer;
-    text-align: left;
+    text-align: center;
     color: inherit;
     font: inherit;
-    transition: background 0.15s, border-color 0.15s;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 18px 40px rgba(0,0,0,0.4);
+    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
   }
   .item:hover, .item:focus-visible {
-    background: var(--card-hover);
-    border-color: var(--sky);
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.11);
+    border-color: rgba(160, 215, 245, 0.55);
     outline: none;
   }
   .item img, .thumb-fallback {
@@ -67,7 +104,8 @@
     width: 100%;
     aspect-ratio: 16 / 10;
     object-fit: cover;
-    background: #0f1c29;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.35);
   }
   .thumb-fallback {
     display: flex;
@@ -77,39 +115,46 @@
     font-size: 0.9rem;
   }
   .item .name {
-    padding: 14px 16px 2px;
+    font-family: var(--serif);
     font-weight: 600;
+    font-size: 1.35rem;
+    letter-spacing: 0.03em;
+    padding: 14px 10px 2px;
   }
   .item .updated {
-    padding: 0 16px 14px;
+    padding: 0 10px 12px;
     color: var(--muted);
-    font-size: 0.85rem;
-  }
-  .modal-body .updated {
-    color: var(--muted);
-    font-size: 0.9rem;
-    margin: -4px 0 14px;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
   }
 
   /* Pop-up */
   dialog {
-    background: var(--card);
+    background: rgba(8, 26, 40, 0.62);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    backdrop-filter: blur(28px) saturate(150%);
     color: var(--text);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    width: min(560px, calc(100% - 32px));
+    border: 1px solid var(--glass-line);
+    border-radius: 26px;
+    width: min(580px, calc(100% - 32px));
     max-height: calc(100% - 48px);
     margin: auto;
-    padding: 0;
+    padding: 12px;
     overflow: auto;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 30px 80px rgba(0,0,0,0.6);
   }
-  dialog::backdrop { background: rgba(3, 8, 14, 0.8); }
+  dialog::backdrop {
+    background: rgba(0, 6, 12, 0.7);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
   .modal-img, .modal-img-fallback {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
-    background: #0f1c29;
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.35);
   }
   .modal-img-fallback {
     display: flex;
@@ -117,39 +162,98 @@
     justify-content: center;
     color: var(--muted);
   }
-  .modal-body { padding: 22px; }
-  .modal-body h2 { color: var(--sky); font-size: 1.5rem; margin-bottom: 10px; }
-  .modal-body .desc { color: var(--text); white-space: pre-line; margin-bottom: 20px; }
-  .links { display: flex; flex-direction: column; gap: 10px; }
+  .modal-body { padding: 22px 14px 14px; }
+  .modal-body h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.9rem;
+    letter-spacing: 0.03em;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .modal-body .updated {
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
+  }
+  .modal-body .desc {
+    color: #d3e4f0;
+    white-space: pre-line;
+    margin-bottom: 24px;
+  }
+
+  /* Liquid glass buttons */
+  .links { display: flex; flex-direction: column; gap: 12px; }
   .links a {
     display: block;
     text-align: center;
     text-decoration: none;
-    font-weight: 600;
-    padding: 12px 16px;
-    border-radius: 8px;
-    background: var(--sky);
-    color: #04121c;
-    transition: background 0.15s;
+    font-family: var(--sans);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: #fff;
+    padding: 14px 22px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.26) 0%, rgba(255,255,255,0.07) 55%, rgba(124,198,238,0.16) 100%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.55),
+      inset 0 -10px 18px rgba(124,198,238,0.12),
+      0 10px 26px rgba(0,0,0,0.38);
+    transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
   }
-  .links a:hover, .links a:focus-visible { background: var(--sky-dark); color: #fff; outline: none; }
-  .links a.paid { background: var(--paid); }
-  .links a.paid:hover, .links a.paid:focus-visible { background: #c98d22; color: #fff; }
+  .links a:hover, .links a:focus-visible {
+    transform: translateY(-2px);
+    background: linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 55%, rgba(124,198,238,0.26) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.7),
+      inset 0 -10px 18px rgba(124,198,238,0.2),
+      0 14px 32px rgba(0,0,0,0.45),
+      0 0 26px rgba(124,198,238,0.28);
+    outline: none;
+  }
+  .links a.paid {
+    background: linear-gradient(180deg, rgba(255,226,160,0.3) 0%, rgba(240,196,106,0.1) 55%, rgba(240,196,106,0.2) 100%);
+    border-color: rgba(240, 196, 106, 0.55);
+    color: #fff3d6;
+  }
+  .links a.paid:hover, .links a.paid:focus-visible {
+    background: linear-gradient(180deg, rgba(255,226,160,0.42) 0%, rgba(240,196,106,0.16) 55%, rgba(240,196,106,0.3) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,240,200,0.7),
+      0 14px 32px rgba(0,0,0,0.45),
+      0 0 26px rgba(240,196,106,0.3);
+  }
   .close {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 36px;
-    height: 36px;
+    top: 22px;
+    right: 22px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    border: none;
-    background: rgba(5, 12, 20, 0.75);
-    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(0, 10, 18, 0.45);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: #fff;
     font-size: 1.3rem;
+    line-height: 1;
     cursor: pointer;
+    transition: background 0.25s ease, transform 0.25s ease;
   }
-  .close:hover, .close:focus-visible { background: var(--sky); color: #04121c; outline: none; }
-  footer { text-align: center; color: var(--muted); padding: 0 20px 40px; font-size: 0.9rem; }
+  .close:hover, .close:focus-visible { background: rgba(124,198,238,0.35); transform: scale(1.06); outline: none; }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-family: var(--serif);
+    font-style: italic;
+    letter-spacing: 0.05em;
+    padding: 0 20px 44px;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; }
@@ -159,13 +263,14 @@
 <body>
 
 <header>
-  <h1>Mods by 89 Gamer</h1>
-  <p>Click a mod to see the description and downloads.</p>
+  <h1>Mods by 89_Gamer</h1>
+  <div class="divider"></div>
+  <p>Select a mod to see its details and downloads</p>
 </header>
 
 <main id="grid"></main>
 
-<footer>Mods by 89 Gamer</footer>
+<footer>Mods by 89_Gamer</footer>
 
 <dialog id="modal">
   <button class="close" id="closeBtn" aria-label="Close">&times;</button>
@@ -177,7 +282,7 @@
    EDIT YOUR MODS HERE
    Copy one block { ... }, to add another mod. Keep the commas.
 
-   image:    the picture file you uploaded, for example "images/mod1.jpg"
+   image:    the picture file you uploaded to GitHub (exact file name)
    updated:  the date you last updated the mod, written YEAR-MONTH-DAY
              like "2026-10-18". Change it every time you release a new version.
    links:    each link has a label (button text) and a url.
@@ -186,12 +291,12 @@
 const mods = [
   {
     name: "Helsinki Airport Parking Slots",
-    image: "helsinki-airport.jpg",
+    image: "Screenshot_20261016_195519_Aerofly FS(1) (1).jpg",
     updated: "2026-10-18",
-    description: "Parking slots add-on for Helsinki Airport (EFHK / HEL) in Aerofly FS. Gates numbers are the same in real life\n\nMobile: download the .tme file.\nAerofly FS 4: download the .zip file.",
+    description: "Parking slots add-on for Helsinki Airport (EFHK / HEL) in Aerofly FS.\n\nMobile: download the .tme file.\nAerofly FS 4: download the .zip file.",
     links: [
-      { label: "Download for Mobile (.tme)", url: "Helsinki_Airport.tme" },
-      { label: "Download for Aerofly FS 4 (.zip)", url: "Helsinki_Airport.zip" }
+      { label: "Download for Mobile (.tme)", url: "Helsinki Airport.tme" },
+      { label: "Download for Aerofly FS 4 (.zip)", url: "Helsinki Airport.zip" }
     ]
   }
 ];
