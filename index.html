@@ -139,6 +139,11 @@
     transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
   }
   .cat .count { color: var(--muted); font-size: 0.85rem; }
+  .cat-divider {
+    height: 1px;
+    margin: 6px 12px;
+    background: rgba(255,255,255,0.14);
+  }
   .cat:hover, .cat:focus-visible {
     background: rgba(255,255,255,0.08);
     outline: none;
@@ -156,6 +161,7 @@
     .sidebar h2 { display: none; }
     .sidebar nav { flex-direction: row; overflow-x: auto; padding-bottom: 2px; }
     .cat { width: auto; white-space: nowrap; flex: 0 0 auto; }
+    .cat-divider { width: 1px; height: auto; margin: 4px 2px; flex: 0 0 1px; }
   }
   .item {
     background: var(--glass);
@@ -361,7 +367,7 @@
 
 <div class="layout">
   <aside class="sidebar">
-    <h2>Categories</h2>
+    <h2>Browse</h2>
     <nav id="cats"></nav>
   </aside>
   <main id="grid"></main>
@@ -389,6 +395,9 @@
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
 const categories = ["Scenery", "Pushback slots", "Liveries"];
+
+// "Recently Updated" shows mods whose updated date is within this many days
+const RECENT_DAYS = 30;
 
 const mods = [
   {
@@ -470,31 +479,60 @@ function updatedText(mod) {
 }
 
 const catsNav = document.getElementById("cats");
-let currentCategory = "All";
+const ALL = "All Releases";
+const RECENT = "Recently Updated";
+let currentCategory = ALL;
+
+function isRecent(mod) {
+  if (!mod.updated) return false;
+  const d = new Date(mod.updated + "T00:00:00Z");
+  if (isNaN(d)) return false;
+  return Date.now() - d.getTime() <= RECENT_DAYS * 24 * 60 * 60 * 1000;
+}
+
+function getShown() {
+  if (currentCategory === ALL) return mods;
+  if (currentCategory === RECENT) {
+    // newest update first; for the same date, the most recently added mod first
+    return mods
+      .map((mod, i) => ({ mod, i }))
+      .filter(x => isRecent(x.mod))
+      .sort((a, b) => (b.mod.updated.localeCompare(a.mod.updated)) || (b.i - a.i))
+      .map(x => x.mod);
+  }
+  return mods.filter(m => m.category === currentCategory);
+}
+
+function addCatButton(name, count) {
+  const btn = el("button", { type: "button" }, [
+    el("span", { textContent: name }),
+    el("span", { className: "count", textContent: String(count) })
+  ]);
+  btn.className = "cat" + (name === currentCategory ? " active" : "");
+  btn.addEventListener("click", () => {
+    currentCategory = name;
+    renderSidebar();
+    renderGrid();
+  });
+  catsNav.append(btn);
+}
 
 function renderSidebar() {
   catsNav.replaceChildren();
-  ["All", ...categories].forEach(name => {
-    const n = name === "All" ? mods.length : mods.filter(m => m.category === name).length;
-    const btn = el("button", { type: "button" }, [
-      el("span", { textContent: name }),
-      el("span", { className: "count", textContent: String(n) })
-    ]);
-    btn.className = "cat" + (name === currentCategory ? " active" : "");
-    btn.addEventListener("click", () => {
-      currentCategory = name;
-      renderSidebar();
-      renderGrid();
-    });
-    catsNav.append(btn);
+  addCatButton(ALL, mods.length);
+  addCatButton(RECENT, mods.filter(isRecent).length);
+  catsNav.append(el("div", { className: "cat-divider" }));
+  categories.forEach(name => {
+    addCatButton(name, mods.filter(m => m.category === name).length);
   });
 }
 
 function renderGrid() {
   grid.replaceChildren();
-  const shown = currentCategory === "All" ? mods : mods.filter(m => m.category === currentCategory);
+  const shown = getShown();
   if (shown.length === 0) {
-    grid.append(el("div", { className: "empty", textContent: "Nothing here yet. Coming soon." }));
+    const msg = currentCategory === RECENT ? "No recent updates yet." : "Nothing here yet. Coming soon.";
+    grid.append(el("div", { className: "empty", textContent: msg }));
     return;
   }
   shown.forEach(mod => {
