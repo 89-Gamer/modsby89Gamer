@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mods by 89 Gamer</title>
+<style>
+  :root {
+    --bg: #0b1520;
+    --card: #12212f;
+    --card-hover: #17293a;
+    --line: #1f3347;
+    --text: #e6f1fa;
+    --muted: #8fa8bd;
+    --sky: #2f9fd8;
+    --sky-dark: #1d7db0;
+    --paid: #e8a838;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  header {
+    text-align: center;
+    padding: 56px 20px 32px;
+  }
+  header h1 {
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 700;
+    color: var(--sky);
+    letter-spacing: 0.5px;
+  }
+  header p {
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 64px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+    font: inherit;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .item:hover, .item:focus-visible {
+    background: var(--card-hover);
+    border-color: var(--sky);
+    outline: none;
+  }
+  .item img, .thumb-fallback {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    background: #0f1c29;
+  }
+  .thumb-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .item .name {
+    padding: 14px 16px 2px;
+    font-weight: 600;
+  }
+  .item .updated {
+    padding: 0 16px 14px;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .modal-body .updated {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: -4px 0 14px;
+  }
+
+  /* Pop-up */
+  dialog {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    width: min(560px, calc(100% - 32px));
+    max-height: calc(100% - 48px);
+    margin: auto;
+    padding: 0;
+    overflow: auto;
+  }
+  dialog::backdrop { background: rgba(3, 8, 14, 0.8); }
+  .modal-img, .modal-img-fallback {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: #0f1c29;
+  }
+  .modal-img-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+  }
+  .modal-body { padding: 22px; }
+  .modal-body h2 { color: var(--sky); font-size: 1.5rem; margin-bottom: 10px; }
+  .modal-body .desc { color: var(--text); white-space: pre-line; margin-bottom: 20px; }
+  .links { display: flex; flex-direction: column; gap: 10px; }
+  .links a {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: var(--sky);
+    color: #04121c;
+    transition: background 0.15s;
+  }
+  .links a:hover, .links a:focus-visible { background: var(--sky-dark); color: #fff; outline: none; }
+  .links a.paid { background: var(--paid); }
+  .links a.paid:hover, .links a.paid:focus-visible { background: #c98d22; color: #fff; }
+  .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(5, 12, 20, 0.75);
+    color: var(--text);
+    font-size: 1.3rem;
+    cursor: pointer;
+  }
+  .close:hover, .close:focus-visible { background: var(--sky); color: #04121c; outline: none; }
+  footer { text-align: center; color: var(--muted); padding: 0 20px 40px; font-size: 0.9rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mods by 89 Gamer</h1>
+  <p>Click a mod to see the description and downloads.</p>
+</header>
+
+<main id="grid"></main>
+
+<footer>Mods by 89 Gamer</footer>
+
+<dialog id="modal">
+  <button class="close" id="closeBtn" aria-label="Close">&times;</button>
+  <div id="modalContent"></div>
+</dialog>
+
+<script>
+/* ================================================================
+   EDIT YOUR MODS HERE
+   Copy one block { ... }, to add another mod. Keep the commas.
+
+   image:    the picture file you uploaded, for example "images/mod1.jpg"
+   updated:  the date you last updated the mod, written YEAR-MONTH-DAY
+             like "2026-10-18". Change it every time you release a new version.
+   links:    each link has a label (button text) and a url.
+             Add  paid: true  for Gumroad / paid links (they turn gold).
+   ================================================================ */
+const mods = [
+  {
+    name: "Helsinki Airport Parking Slots",
+    image: "images/helsinki-airport.jpg",
+    updated: "2026-10-18",
+    description: "Parking slots add-on for Helsinki Airport (EFHK / HEL) in Aerofly FS.\n\nMobile: download the .tme file.\nAerofly FS 4: download the .zip file.",
+    links: [
+      { label: "Download for Mobile (.tme)", url: "Helsinki_Airport.tme" },
+      { label: "Download for Aerofly FS 4 (.zip)", url: "Helsinki_Airport.zip" }
+    ]
+  }
+];
+/* ============== END OF THE PART YOU EDIT ============== */
+
+const grid = document.getElementById("grid");
+const modal = document.getElementById("modal");
+const modalContent = document.getElementById("modalContent");
+
+function el(tag, props = {}, children = []) {
+  const node = document.createElement(tag);
+  Object.assign(node, props);
+  children.forEach(c => node.append(c));
+  return node;
+}
+
+function picture(src, alt, imgClass, fallbackClass) {
+  const img = el("img", { src, alt, loading: "lazy" });
+  img.className = imgClass;
+  img.onerror = () => {
+    const fb = el("div", { textContent: "No picture yet" });
+    fb.className = fallbackClass;
+    img.replaceWith(fb);
+  };
+  return img;
+}
+
+function updatedText(mod) {
+  if (!mod.updated) return "";
+  const d = new Date(mod.updated + "T00:00:00Z");
+  if (isNaN(d)) return "Updated " + mod.updated;
+  return "Updated " + d.toLocaleDateString("en-GB", {
+    day: "numeric", month: "short", year: "numeric", timeZone: "UTC"
+  });
+}
+
+mods.forEach(mod => {
+  const card = el("button", { type: "button" });
+  card.className = "item";
+  card.append(
+    picture(mod.image, mod.name, "", "thumb-fallback"),
+    el("div", { className: "name", textContent: mod.name })
+  );
+  if (mod.updated) card.append(el("div", { className: "updated", textContent: updatedText(mod) }));
+  card.addEventListener("click", () => openMod(mod));
+  grid.append(card);
+});
+
+function openMod(mod) {
+  modalContent.replaceChildren();
+  const links = el("div", { className: "links" });
+  mod.links.forEach(l => {
+    const a = el("a", { href: l.url, textContent: l.label, target: "_blank", rel: "noopener" });
+    if (l.paid) a.classList.add("paid");
+    if (!/^https?:/i.test(l.url)) { a.removeAttribute("target"); a.setAttribute("download", ""); }
+    links.append(a);
+  });
+  const body = el("div", { className: "modal-body" }, [el("h2", { textContent: mod.name })]);
+  if (mod.updated) body.append(el("p", { className: "updated", textContent: updatedText(mod) }));
+  body.append(el("p", { className: "desc", textContent: mod.description }), links);
+  modalContent.append(picture(mod.image, mod.name, "modal-img", "modal-img-fallback"), body);
+  modal.showModal();
+}
+
+document.getElementById("closeBtn").addEventListener("click", () => modal.close());
+modal.addEventListener("click", e => { if (e.target === modal) modal.close(); });
+</script>
+</body>
+</html>
