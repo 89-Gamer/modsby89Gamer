@@ -199,6 +199,12 @@
     letter-spacing: 0.03em;
     padding: 14px 10px 2px;
   }
+  .item .price {
+    color: var(--gold);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 0 10px 2px;
+  }
   .item .updated {
     padding: 0 10px 12px;
     color: var(--muted);
@@ -254,6 +260,13 @@
     font-size: 0.85rem;
     letter-spacing: 0.06em;
     margin-bottom: 16px;
+  }
+  .modal-body .price {
+    color: var(--gold);
+    font-weight: 500;
+    font-size: 1.15rem;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
   }
   .modal-body .desc {
     color: #d3e4f0;
@@ -369,6 +382,7 @@
    category: which sidebar category it belongs to. It must be written exactly
              like one of the names in the categories list below.
    image:    the picture file you uploaded to GitHub (exact file name)
+   price:    optional. For paid mods, like "€1.99". Leave this line out for free mods.
    updated:  the date you last updated the mod, written YEAR-MONTH-DAY
              like "2026-10-18". Change it every time you release a new version.
    links:    each link has a label (button text) and a url.
@@ -382,10 +396,21 @@ const mods = [
     category: "Pushback slots",
     image: "helsinki-airport.jpg",
     updated: "2026-10-18",
-    description: "Parking slots add-on for Helsinki Airport (EFHK / HEL) in Aerofly FS.\n\nMobile: download the .tme file.\nAerofly FS 4: download the .zip file.",
+    description: "Parking slots add-on for Helsinki Airport (EFHK / HEL) in Aerofly FS. Gate are number the same in real life!\n\nMobile: download the .tme file.\nAerofly FS 4: download the .zip file.",
     links: [
       { label: "Download for Mobile (.tme)", url: "Helsinki Airport.tme" },
       { label: "Download for Aerofly FS 4 (.zip)", url: "Helsinki Airport.zip" }
+    ]
+  },
+  {
+    name: "(Paid Livery) Finnair A350",
+    category: "Liveries",
+    image: "finnair-a350.jpg",
+    price: "€1.99",
+    updated: "2026-10-18",
+    description: "MOBILE VERSION! PC VERSION WILL BE SOON OUT!\nMy first livery for Aerofly I made and accurately 1:1 with the real livery. More updates for the livery will come in future!",
+    links: [
+      { label: "Go to shop", url: "https://legendary546.gumroad.com/l/A35K", paid: true }
     ]
   }
 ];
@@ -457,6 +482,7 @@ function renderGrid() {
       picture(mod.image, mod.name, "", "thumb-fallback"),
       el("div", { className: "name", textContent: mod.name })
     );
+    if (mod.price) card.append(el("div", { className: "price", textContent: mod.price }));
     if (mod.updated) card.append(el("div", { className: "updated", textContent: updatedText(mod) }));
     card.addEventListener("click", () => openMod(mod));
     grid.append(card);
@@ -477,6 +503,7 @@ function openMod(mod) {
   });
   const body = el("div", { className: "modal-body" }, [el("h2", { textContent: mod.name })]);
   if (mod.updated) body.append(el("p", { className: "updated", textContent: updatedText(mod) }));
+  if (mod.price) body.append(el("p", { className: "price", textContent: mod.price }));
   body.append(el("p", { className: "desc", textContent: mod.description }), links);
   modalContent.append(picture(mod.image, mod.name, "modal-img", "modal-img-fallback"), body);
   modal.showModal();
