@@ -71,13 +71,91 @@
   }
 
   /* Grid of mods */
-  main {
-    max-width: 1100px;
+  .layout {
+    max-width: 1240px;
     margin: 0 auto;
     padding: 0 24px 80px;
     display: grid;
+    grid-template-columns: 230px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  main {
+    display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 28px;
+  }
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.25rem;
+    color: var(--muted);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    position: sticky;
+    top: 24px;
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid var(--glass-line);
+    border-radius: 22px;
+    padding: 20px 14px 14px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 18px 40px rgba(0,0,0,0.4);
+  }
+  .sidebar h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.35rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #fff;
+    padding-bottom: 14px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.14);
+  }
+  .sidebar nav { display: flex; flex-direction: column; gap: 8px; }
+  .cat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    color: var(--text);
+    padding: 12px 16px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .cat .count { color: var(--muted); font-size: 0.85rem; }
+  .cat:hover, .cat:focus-visible {
+    background: rgba(255,255,255,0.08);
+    outline: none;
+  }
+  .cat.active {
+    background: linear-gradient(180deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.06) 55%, rgba(124,198,238,0.16) 100%);
+    border-color: rgba(255,255,255,0.32);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 6px 18px rgba(0,0,0,0.3);
+    color: #fff;
+  }
+
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; gap: 24px; padding: 0 16px 64px; }
+    .sidebar { position: static; padding: 14px 12px; }
+    .sidebar h2 { display: none; }
+    .sidebar nav { flex-direction: row; overflow-x: auto; padding-bottom: 2px; }
+    .cat { width: auto; white-space: nowrap; flex: 0 0 auto; }
   }
   .item {
     background: var(--glass);
@@ -265,10 +343,16 @@
 <header>
   <h1>Mods by 89_Gamer</h1>
   <div class="divider"></div>
-  <p>All mods made by 89_Gamer</p>
+  <p>Select a mod to see its details and downloads</p>
 </header>
 
-<main id="grid"></main>
+<div class="layout">
+  <aside class="sidebar">
+    <h2>Categories</h2>
+    <nav id="cats"></nav>
+  </aside>
+  <main id="grid"></main>
+</div>
 
 <footer>Mods by 89_Gamer</footer>
 
@@ -282,15 +366,20 @@
    EDIT YOUR MODS HERE
    Copy one block { ... }, to add another mod. Keep the commas.
 
+   category: which sidebar category it belongs to. It must be written exactly
+             like one of the names in the categories list below.
    image:    the picture file you uploaded to GitHub (exact file name)
    updated:  the date you last updated the mod, written YEAR-MONTH-DAY
              like "2026-10-18". Change it every time you release a new version.
    links:    each link has a label (button text) and a url.
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
+const categories = ["Scenery", "Pushback slots", "Liveries"];
+
 const mods = [
   {
     name: "Helsinki Airport Parking Slots",
+    category: "Pushback slots",
     image: "helsinki-airport.jpg",
     updated: "2026-10-18",
     description: "Parking slots add-on for Helsinki Airport (EFHK / HEL) in Aerofly FS.\n\nMobile: download the .tme file.\nAerofly FS 4: download the .zip file.",
@@ -333,17 +422,49 @@ function updatedText(mod) {
   });
 }
 
-mods.forEach(mod => {
-  const card = el("button", { type: "button" });
-  card.className = "item";
-  card.append(
-    picture(mod.image, mod.name, "", "thumb-fallback"),
-    el("div", { className: "name", textContent: mod.name })
-  );
-  if (mod.updated) card.append(el("div", { className: "updated", textContent: updatedText(mod) }));
-  card.addEventListener("click", () => openMod(mod));
-  grid.append(card);
-});
+const catsNav = document.getElementById("cats");
+let currentCategory = "All";
+
+function renderSidebar() {
+  catsNav.replaceChildren();
+  ["All", ...categories].forEach(name => {
+    const n = name === "All" ? mods.length : mods.filter(m => m.category === name).length;
+    const btn = el("button", { type: "button" }, [
+      el("span", { textContent: name }),
+      el("span", { className: "count", textContent: String(n) })
+    ]);
+    btn.className = "cat" + (name === currentCategory ? " active" : "");
+    btn.addEventListener("click", () => {
+      currentCategory = name;
+      renderSidebar();
+      renderGrid();
+    });
+    catsNav.append(btn);
+  });
+}
+
+function renderGrid() {
+  grid.replaceChildren();
+  const shown = currentCategory === "All" ? mods : mods.filter(m => m.category === currentCategory);
+  if (shown.length === 0) {
+    grid.append(el("div", { className: "empty", textContent: "Nothing here yet. Coming soon." }));
+    return;
+  }
+  shown.forEach(mod => {
+    const card = el("button", { type: "button" });
+    card.className = "item";
+    card.append(
+      picture(mod.image, mod.name, "", "thumb-fallback"),
+      el("div", { className: "name", textContent: mod.name })
+    );
+    if (mod.updated) card.append(el("div", { className: "updated", textContent: updatedText(mod) }));
+    card.addEventListener("click", () => openMod(mod));
+    grid.append(card);
+  });
+}
+
+renderSidebar();
+renderGrid();
 
 function openMod(mod) {
   modalContent.replaceChildren();
