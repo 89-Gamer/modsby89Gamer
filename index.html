@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aerofly FS mods by 89_Gamer</title>
+<title>Mods by 89_Gamer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -228,7 +228,10 @@
   }
 
   @media (max-width: 800px) {
-    .layout { grid-template-columns: 1fr; gap: 24px; padding: 0 16px 64px; }
+    .layout { grid-template-columns: 1fr; gap: 20px; padding: 0 16px 56px; }
+    main { grid-template-columns: 1fr; gap: 22px; }
+    header { padding: 48px 16px 28px; }
+    header p { font-size: 1.05rem; }
     .sidebar { position: static; padding: 12px; display: flex; align-items: center; gap: 10px; }
     .side-head { padding: 0; margin: 0; border: 0; flex: 0 0 auto; }
     .sidebar h2 { display: none; }
@@ -423,6 +426,15 @@
     font-style: italic;
     letter-spacing: 0.05em;
     padding: 0 20px 44px;
+  }
+
+  @media (max-width: 480px) {
+    dialog { width: calc(100% - 20px); max-height: calc(100% - 28px); padding: 8px; border-radius: 22px; }
+    .modal-body { padding: 18px 8px 8px; }
+    .modal-body h2 { font-size: 1.6rem; }
+    .star { top: 16px; left: 16px; }
+    .close { top: 16px; right: 16px; }
+    .links a { padding: 15px 18px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
