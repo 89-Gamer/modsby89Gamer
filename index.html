@@ -658,7 +658,7 @@
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
 // Site version: shown at the bottom of the page. It goes up with every update.
-const SITE_VERSION = "2.1";
+const SITE_VERSION = "2.2";
 
 const categories = ["Scenery", "Pushback slots", "Liveries"];
 
@@ -945,26 +945,28 @@ function isRecent(mod) {
   return Date.now() - d.getTime() <= RECENT_DAYS * 24 * 60 * 60 * 1000;
 }
 
+// Newest first: by the "updated" date. If two mods have the same date,
+// the one added later in the list below comes first.
+function newestFirst(list) {
+  return list
+    .map((mod, i) => ({ mod, i }))
+    .sort((a, b) => (b.mod.updated || "").localeCompare(a.mod.updated || "") || (b.i - a.i))
+    .map(x => x.mod);
+}
+
 function getShown() {
   const q = searchBox.value.trim().toLowerCase();
   if (q) {
     // searching looks through every mod, whatever menu option is selected
-    return mods.filter(m =>
-      (m.name + " " + (m.description || "") + " " + (m.category || "")).toLowerCase().includes(q));
+    return newestFirst(mods.filter(m =>
+      (m.name + " " + (m.description || "") + " " + (m.category || "")).toLowerCase().includes(q)));
   }
   if (currentCategory === COMING) return mods.filter(m => m.comingSoon);
   const live = mods.filter(m => !m.comingSoon);
-  if (currentCategory === ALL) return live;
-  if (currentCategory === FAV) return live.filter(m => favs.has(m.name));
-  if (currentCategory === RECENT) {
-    // newest update first; for the same date, the most recently added mod first
-    return mods
-      .map((mod, i) => ({ mod, i }))
-      .filter(x => isRecent(x.mod))
-      .sort((a, b) => (b.mod.updated.localeCompare(a.mod.updated)) || (b.i - a.i))
-      .map(x => x.mod);
-  }
-  return live.filter(m => m.category === currentCategory);
+  if (currentCategory === ALL) return newestFirst(live);
+  if (currentCategory === FAV) return newestFirst(live.filter(m => favs.has(m.name)));
+  if (currentCategory === RECENT) return newestFirst(mods.filter(isRecent));
+  return newestFirst(live.filter(m => m.category === currentCategory));
 }
 
 function addCatButton(name, count) {
