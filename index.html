@@ -503,6 +503,50 @@
     color: var(--muted);
     padding: 0 4px 8px;
   }
+  .gallery { position: relative; }
+  .gal-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 4px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(0, 10, 18, 0.45);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    font-size: 1.9rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.25s ease;
+  }
+  .gal-btn.prev { left: 10px; }
+  .gal-btn.next { right: 10px; }
+  .gal-btn:hover, .gal-btn:focus-visible { background: rgba(124,198,238,0.35); outline: none; }
+  .gallery-dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  .gal-dot {
+    width: 12px;
+    height: 12px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+  }
+  .gal-dot.on { background: #fff; }
   .maint-wrap { position: relative; }
   .links .btn-off {
     display: block;
@@ -604,6 +648,9 @@
    version:  the mod's version, like "1.0". Change it when you release an update.
    comingSoon: add  comingSoon: true  for a mod that isn't out yet. It only shows
              under "Coming Soon" (no download buttons). Remove that line when it's released.
+   images:   optional. A list of pictures for the pop-up, like ["a.jpg", "b.jpg"].
+             With 2 or more pictures, arrow buttons appear to switch between them.
+             The card on the main page uses  image  (the first picture).
    maintenance: add  maintenance: true  to switch off this mod's download buttons.
    updated:  the date you last updated the mod, written YEAR-MONTH-DAY
              like "2026-10-18". Change it every time you release a new version.
@@ -611,7 +658,7 @@
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
 // Site version: shown at the bottom of the page. It goes up with every update.
-const SITE_VERSION = "1.8";
+const SITE_VERSION = "1.9";
 
 const categories = ["Scenery", "Pushback slots", "Liveries"];
 
@@ -733,6 +780,19 @@ const mods = [
     links: [
       { label: "Download for Mobile (.tme)", url: "https://drive.google.com/file/d/1hZXf2RwnAjgwbRL3vIB-X11i2bblIf2E/view?usp=drive_link" },
       { label: "Download for PC (.zip)", url: "https://drive.google.com/file/d/15jYSOtOqToTCXlq6JD3hOZd9bawDX4-7/view?usp=drive_link" }
+    ]
+  },
+  {
+    name: "Turkish Airlines Boeing 777-300ER (Bio Fuel)",
+    category: "Liveries",
+    image: "turkish-bio-1.jpg",
+    images: ["turkish-bio-1.jpg", "turkish-bio-2.jpg"],
+    updated: "2026-10-31",
+    version: "1.0",
+    description: "Turkish Airlines Boeing 777-300ER livery with the special Bio Fuel decal for Aerofly FS. Free!\nThe .tme file is for mobile and the .zip file is for PC.",
+    links: [
+      { label: "Download for Mobile (.tme)", url: "turkishbio.tme" },
+      { label: "Download for PC (.zip)", url: "turkishbio_pc.zip" }
     ]
   },
   {
@@ -993,7 +1053,51 @@ favBtn.addEventListener("click", () => {
 renderSidebar();
 renderGrid();
 
+let galleryStep = null;
+
+function buildGallery(mod) {
+  const pics = (mod.images && mod.images.length) ? mod.images : [mod.image];
+  if (pics.length < 2) return picture(pics[0], mod.name, "modal-img", "modal-img-fallback");
+  let i = 0;
+  const wrap = el("div", { className: "gallery" });
+  const stage = el("div", { className: "gallery-stage" });
+  const dots = el("div", { className: "gallery-dots" });
+  const show = n => {
+    i = (n + pics.length) % pics.length;
+    stage.replaceChildren(picture(pics[i], mod.name + " (" + (i + 1) + " of " + pics.length + ")", "modal-img", "modal-img-fallback"));
+    [...dots.children].forEach((d, k) => d.classList.toggle("on", k === i));
+  };
+  const arrow = (label, text, dir) => {
+    const b = el("button", { type: "button", textContent: text });
+    b.className = "gal-btn " + (dir < 0 ? "prev" : "next");
+    b.setAttribute("aria-label", label);
+    b.addEventListener("click", () => show(i + dir));
+    return b;
+  };
+  pics.forEach((_, k) => {
+    const d = el("button", { type: "button" });
+    d.className = "gal-dot";
+    d.setAttribute("aria-label", "Picture " + (k + 1));
+    d.addEventListener("click", () => show(k));
+    dots.append(d);
+  });
+  wrap.append(stage, arrow("Previous picture", "\u2039", -1), arrow("Next picture", "\u203a", 1), dots);
+  // swipe left or right on a phone
+  let x0 = null;
+  stage.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
+  stage.addEventListener("touchend", e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1));
+    x0 = null;
+  });
+  galleryStep = dir => show(i + dir);
+  show(0);
+  return wrap;
+}
+
 function openMod(mod) {
+  galleryStep = null;
   modalContent.replaceChildren();
   const maint = isMaintenance(mod);
   const links = el("div", { className: "links" });
@@ -1039,12 +1143,17 @@ function openMod(mod) {
     renderSidebar();
     renderGrid();
   });
-  modalContent.append(picture(mod.image, mod.name, "modal-img", "modal-img-fallback"), body);
+  modalContent.append(buildGallery(mod), body);
   if (!mod.comingSoon) modalContent.append(star);
   modal.showModal();
 }
 
 document.getElementById("closeBtn").addEventListener("click", () => modal.close());
+modal.addEventListener("keydown", e => {
+  if (!galleryStep) return;
+  if (e.key === "ArrowLeft") galleryStep(-1);
+  if (e.key === "ArrowRight") galleryStep(1);
+});
 modal.addEventListener("click", e => { if (e.target === modal) modal.close(); });
 </script>
 </body>
