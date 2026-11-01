@@ -689,8 +689,9 @@
   .gal-btn:active { transform: translateY(-50%) scale(0.9); transition-duration: 0.15s; }
 
   /* a soft shine that follows your finger or mouse */
-  .item, .links a, .cat, .fav-pill { position: relative; overflow: hidden; }
-  .item::after, .links a::after, .cat::after, .fav-pill::after {
+  .item { position: relative; }
+  .links a, .cat, .fav-pill { position: relative; overflow: hidden; }
+  .links a::after, .cat::after, .fav-pill::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -700,9 +701,9 @@
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-  .item:hover::after, .links a:hover::after, .cat:hover::after, .fav-pill:hover::after,
-  .item:focus-visible::after, .links a:focus-visible::after, .cat:focus-visible::after, .fav-pill:focus-visible::after,
-  .item:active::after, .links a:active::after { opacity: 1; }
+  .links a:hover::after, .cat:hover::after, .fav-pill:hover::after,
+  .links a:focus-visible::after, .cat:focus-visible::after, .fav-pill:focus-visible::after,
+  .links a:active::after { opacity: 1; }
 </style>
 </head>
 <body>
@@ -759,7 +760,7 @@
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
 // Site version: shown at the bottom of the page. It goes up with every update.
-const SITE_VERSION = "2.5";
+const SITE_VERSION = "2.6";
 
 const categories = ["Scenery", "Pushback slots", "Liveries"];
 
@@ -912,15 +913,14 @@ const mods = [
   {
     name: "Turkish Airlines Boeing 737-900ER (TC-JYB)",
     category: "Liveries",
-    maintenance: true,
     image: "turkish-tc-jyb-1.jpg",
     images: ["turkish-tc-jyb-1.jpg", "turkish-tc-jyb-2.jpg", "turkish-tc-jyb-3.jpg"],
     updated: "2026-11-01",
-    version: "1.0",
+    version: "1.1",
     description: "Turkish Airlines Boeing 737-900ER livery for Aerofly FS. Free!\nThis is a renamed plane: the registration is changed (TC-JYB) and it has its real name (Denizli), with some fixes.\nThe .tme file is for mobile and the .zip file is for PC.",
     links: [
-      { label: "Download for Mobile (.tme)", url: "turkish_tc_jyb_mobile.tme" },
-      { label: "Download for PC (.zip)", url: "turkish_tc_jyb_pc.zip" }
+      { label: "Download for Mobile (.tme)", url: "turkish_tc_jyb_mobile_1.tme" },
+      { label: "Download for PC (.zip)", url: "turkish_tc_jyb_pc_1.zip" }
     ]
   },
   {
@@ -1279,7 +1279,7 @@ function openMod(mod) {
 }
 
 // the shine on glass buttons follows the finger or mouse
-const GLOW_SELECTOR = ".item, .links a, .cat, .fav-pill";
+const GLOW_SELECTOR = ".links a, .cat, .fav-pill";
 document.addEventListener("pointermove", e => {
   const t = e.target.closest ? e.target.closest(GLOW_SELECTOR) : null;
   if (!t) return;
