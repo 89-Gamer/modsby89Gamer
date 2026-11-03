@@ -771,7 +771,7 @@
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
 // Site version: shown at the bottom of the page. It goes up with every update.
-const SITE_VERSION = "2.9";
+const SITE_VERSION = "3.0";
 
 const categories = ["Scenery", "Pushback slots", "Liveries"];
 
@@ -800,15 +800,14 @@ const mods = [
     ]
   },
   {
-    name: "(Paid Livery) Finnair A350",
+    name: "(Soon Free) Finnair A350",
     category: "Liveries",
     image: "finnair-a350.jpg",
-    price: "€1.99",
     updated: "2026-10-18",
     version: "1.0",
     description: "MOBILE VERSION! PC VERSION WILL BE SOON OUT!\nMy first livery for Aerofly I made and accurately 1:1 with the real livery. More updates for the livery will come in future!",
     links: [
-      { label: "Go to shop", url: "https://legendary546.gumroad.com/l/A35K", paid: true }
+      { label: "Soon free!", disabled: true }
     ]
   },
   {
@@ -1243,7 +1242,7 @@ function openMod(mod) {
   const maint = isMaintenance(mod);
   const links = el("div", { className: "links" });
   (mod.links || []).forEach(l => {
-    if (maint) {
+    if (maint || l.disabled) {
       // switched off: not a link, nothing to click
       const off = el("span", { textContent: l.label });
       off.className = "btn-off";
