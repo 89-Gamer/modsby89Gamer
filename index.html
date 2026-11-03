@@ -570,6 +570,15 @@
     -webkit-backdrop-filter: blur(3px);
     backdrop-filter: blur(3px);
   }
+  .maint-overlay span.custom {
+    text-transform: none;
+    letter-spacing: 0.03em;
+    white-space: pre-line;
+    text-align: center;
+    line-height: 1.45;
+    max-width: 92%;
+    border-radius: 22px;
+  }
   .maint-overlay span {
     padding: 12px 28px;
     border-radius: 999px;
@@ -754,13 +763,15 @@
              With 2 or more pictures, arrow buttons appear to switch between them.
              The card on the main page uses  image  (the first picture).
    maintenance: add  maintenance: true  to switch off this mod's download buttons.
+             Add  maintenanceText: "your message"  to show your own text over the buttons
+             (use \n for a new line). Without it, it says "Maintenance".
    updated:  the date you last updated the mod, written YEAR-MONTH-DAY
              like "2026-10-18". Change it every time you release a new version.
    links:    each link has a label (button text) and a url.
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
 // Site version: shown at the bottom of the page. It goes up with every update.
-const SITE_VERSION = "2.7";
+const SITE_VERSION = "2.9";
 
 const categories = ["Scenery", "Pushback slots", "Liveries"];
 
@@ -902,8 +913,8 @@ const mods = [
     category: "Liveries",
     image: "boeing-777x-1.jpg",
     images: ["boeing-777x-1.jpg", "boeing-777x-2.jpg", "boeing-777x-3.jpg"],
-    updated: "2026-10-31",
-    version: "1.0",
+    updated: "2026-11-03",
+    version: "1.1",
     description: "Boeing 777X livery for Aerofly FS. Free!\nThe .tme file is for mobile and the .zip file is for PC.",
     links: [
       { label: "Download for Mobile (.tme)", url: "boeingx_mobile.tme" },
@@ -1253,7 +1264,9 @@ function openMod(mod) {
   if (maint && !mod.comingSoon) {
     linksBlock = el("div", { className: "maint-wrap" }, [
       links,
-      el("div", { className: "maint-overlay" }, [el("span", { textContent: "Maintenance" })])
+      el("div", { className: "maint-overlay" }, [
+        el("span", { textContent: mod.maintenanceText || "Maintenance", className: mod.maintenanceText ? "custom" : "" })
+      ])
     ]);
   }
   body.append(mod.comingSoon ? el("div", { className: "soon-note", textContent: "Coming soon" }) : linksBlock);
