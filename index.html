@@ -771,9 +771,9 @@
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
 // Site version: shown at the bottom of the page. It goes up with every update.
-const SITE_VERSION = "3.1";
+const SITE_VERSION = "3.2";
 
-const categories = ["Scenery", "Pushback slots", "Liveries"];
+const categories = ["Scenery", "Pushback slots", "Liveries", "Audio"];
 
 // Download buttons are switched off and show "Maintenance" for these categories.
 // Make the list empty, like [], to turn the downloads back on.
@@ -782,9 +782,6 @@ const MAINTENANCE_CATEGORIES = ["Scenery"];
 function isMaintenance(mod) {
   return !!mod.maintenance || MAINTENANCE_CATEGORIES.includes(mod.category);
 }
-
-// "Recently Updated" shows mods whose updated date is within this many days
-const RECENT_DAYS = 30;
 
 const mods = [
   {
@@ -996,6 +993,30 @@ const mods = [
     image: "coming_soon.jpg",
     description: "Syrianair A320 and B737 liveries for Aerofly FS. Coming soon!",
     links: []
+  },
+  {
+    name: "Turkish Airlines Boarding Music (Piece 1)",
+    category: "Audio",
+    comingSoon: true,
+    image: "coming_soon.jpg",
+    description: "Turkish Airlines boarding music, piece 1 of 3. Coming soon!",
+    links: []
+  },
+  {
+    name: "Turkish Airlines Boarding Music (Piece 2)",
+    category: "Audio",
+    comingSoon: true,
+    image: "coming_soon.jpg",
+    description: "Turkish Airlines boarding music, piece 2 of 3. Coming soon!",
+    links: []
+  },
+  {
+    name: "Turkish Airlines Boarding Music (Piece 3)",
+    category: "Audio",
+    comingSoon: true,
+    image: "coming_soon.jpg",
+    description: "Turkish Airlines boarding music, piece 3 of 3. Coming soon!",
+    links: []
   }
 ];
 /* ============== END OF THE PART YOU EDIT ============== */
@@ -1043,7 +1064,6 @@ const favBtn = document.getElementById("favBtn");
 const searchBox = document.getElementById("search");
 document.getElementById("siteFooter").textContent = "Aerofly mods by 89_Gamer \u00b7 Site v" + SITE_VERSION;
 const ALL = "All Releases";
-const RECENT = "Recently Updated";
 const FAV = "Favourites";
 const COMING = "Coming Soon";
 
@@ -1062,13 +1082,6 @@ function toggleFav(mod) {
   saveFavs();
 }
 let currentCategory = ALL;
-
-function isRecent(mod) {
-  if (mod.comingSoon || !mod.updated) return false;
-  const d = new Date(mod.updated + "T00:00:00Z");
-  if (isNaN(d)) return false;
-  return Date.now() - d.getTime() <= RECENT_DAYS * 24 * 60 * 60 * 1000;
-}
 
 // Newest first: by the "updated" date. If two mods have the same date,
 // the one added later in the list below comes first.
@@ -1090,7 +1103,6 @@ function getShown() {
   const live = mods.filter(m => !m.comingSoon);
   if (currentCategory === ALL) return newestFirst(live);
   if (currentCategory === FAV) return newestFirst(live.filter(m => favs.has(m.name)));
-  if (currentCategory === RECENT) return newestFirst(mods.filter(isRecent));
   return newestFirst(live.filter(m => m.category === currentCategory));
 }
 
@@ -1118,7 +1130,6 @@ function renderSidebar() {
   favBtn.setAttribute("aria-pressed", String(currentCategory === FAV));
   catsNav.replaceChildren();
   addCatButton(ALL, live.length);
-  addCatButton(RECENT, mods.filter(isRecent).length);
   addCatButton(COMING, mods.filter(m => m.comingSoon).length);
   catsNav.append(el("div", { className: "cat-divider" }));
   categories.forEach(name => {
@@ -1172,7 +1183,6 @@ function renderGrid() {
   const shown = getShown();
   if (shown.length === 0) {
     const msg = searching ? "No mods found."
-      : currentCategory === RECENT ? "No recent updates yet."
       : currentCategory === COMING ? "Nothing coming soon right now."
       : currentCategory === FAV ? "No favourites yet. Open a mod and press the star."
       : "Nothing here yet. Coming soon.";
