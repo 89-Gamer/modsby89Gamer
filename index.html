@@ -503,6 +503,12 @@
     color: var(--muted);
     padding: 0 4px 8px;
   }
+  .icon-cover {
+    object-fit: contain !important;
+    padding: 16%;
+    box-sizing: border-box;
+    filter: invert(1) drop-shadow(0 0 18px rgba(124, 198, 238, 0.45));
+  }
   .gallery { position: relative; }
   .gal-btn {
     position: absolute;
@@ -762,6 +768,8 @@
    images:   optional. A list of pictures for the pop-up, like ["a.jpg", "b.jpg"].
              With 2 or more pictures, arrow buttons appear to switch between them.
              The card on the main page uses  image  (the first picture).
+   iconCover: add  iconCover: true  when the picture is a plain black icon (like audio.png);
+             it gets turned white and centred so it shows on the dark glass.
    maintenance: add  maintenance: true  to switch off this mod's download buttons.
              Add  maintenanceText: "your message"  to show your own text over the buttons
              (use \n for a new line). Without it, it says "Maintenance".
@@ -771,7 +779,7 @@
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
 // Site version: shown at the bottom of the page. It goes up with every update.
-const SITE_VERSION = "3.2";
+const SITE_VERSION = "3.3";
 
 const categories = ["Scenery", "Pushback slots", "Liveries", "Audio"];
 
@@ -931,6 +939,30 @@ const mods = [
     ]
   },
   {
+    name: "Turkish Airlines Boarding Music Addon",
+    category: "Audio",
+    image: "audio.png",
+    iconCover: true,
+    updated: "2026-11-07",
+    version: "1.0",
+    description: "Turkish Airlines boarding music for Aerofly.\nWorks on both Aerofly mobile and PC.\nPut the downloaded file in Zk Mods folder for the plane you want for ex: A321",
+    links: [
+      { label: "Download for Mobile & PC (.tsb)", url: "call_cabin.tsb" }
+    ]
+  },
+  {
+    name: "Windshear Warning Sound (Airbus)",
+    category: "Audio",
+    image: "audio.png",
+    iconCover: true,
+    updated: "2026-11-07",
+    version: "1.0",
+    description: "Windshear warning sound for Airbus planes.\nPut the downloaded file in Zk Mods folder for the Airbus plane you want for ex: A321",
+    links: [
+      { label: "Download (.tsb)", url: "call_seatbelt_signs.tsb" }
+    ]
+  },
+  {
     name: "Airbus A350 Turkish Airlines",
     category: "Liveries",
     comingSoon: true,
@@ -992,14 +1024,6 @@ const mods = [
     comingSoon: true,
     image: "coming_soon.jpg",
     description: "Syrianair A320 and B737 liveries for Aerofly FS. Coming soon!",
-    links: []
-  },
-  {
-    name: "Turkish Airlines Boarding Music (Piece 1)",
-    category: "Audio",
-    comingSoon: true,
-    image: "coming_soon.jpg",
-    description: "Turkish Airlines boarding music, piece 1 of 3. Coming soon!",
     links: []
   },
   {
@@ -1141,7 +1165,7 @@ function makeCard(mod) {
   const card = el("button", { type: "button" });
   card.className = "item" + (mod.comingSoon ? " soon" : "");
   card.append(
-    picture(mod.image, mod.name, "", "thumb-fallback"),
+    picture(mod.image, mod.name, mod.iconCover ? "icon-cover" : "", "thumb-fallback"),
     el("div", { className: "name", textContent: mod.name })
   );
   if (mod.comingSoon) {
@@ -1207,7 +1231,7 @@ let galleryStep = null;
 
 function buildGallery(mod) {
   const pics = (mod.images && mod.images.length) ? mod.images : [mod.image];
-  if (pics.length < 2) return picture(pics[0], mod.name, "modal-img", "modal-img-fallback");
+  if (pics.length < 2) return picture(pics[0], mod.name, "modal-img" + (mod.iconCover ? " icon-cover" : ""), "modal-img-fallback");
   let i = 0;
   const wrap = el("div", { className: "gallery" });
   const stage = el("div", { className: "gallery-stage" });
