@@ -512,6 +512,7 @@
     color: #fff3d6;
     font-size: 0.95rem;
     line-height: 1.5;
+    white-space: pre-line;
   }
   .notice-box strong { color: var(--gold); letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.85rem; }
   .icon-cover {
@@ -793,7 +794,7 @@
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
 // Site version: shown at the bottom of the page. It goes up with every update.
-const SITE_VERSION = "3.5";
+const SITE_VERSION = "3.6";
 
 const categories = ["Scenery", "Pushback slots", "Liveries", "Audio"];
 
@@ -805,6 +806,10 @@ function isMaintenance(mod) {
   if (mod.maintenance === false) return false;   // switched back on for this one mod
   return !!mod.maintenance || MAINTENANCE_CATEGORIES.includes(mod.category);
 }
+
+// Notice shown on every boarding music mod: the file name depends on the plane.
+// Edit it here once and all boarding music mods change.
+const BOARDING_NOTICE = "Rename the file for the plane you want:\nAirbus: call_cabin.tsb\nBoeing 787: cabin_call.tsb\nBoeing 737: chime_cabin.tsb";
 
 const mods = [
   {
@@ -962,6 +967,7 @@ const mods = [
     updated: "2026-11-07",
     version: "1.0",
     description: "Turkish Airlines boarding music for Aerofly.\nWorks on both Aerofly mobile and PC.\nPut the downloaded file in Zk Mods folder for the plane you want for ex: A321",
+    notice: BOARDING_NOTICE,
     links: [
       { label: "Download for Mobile & PC (.tsb)", url: "call_cabin.tsb" }
     ]
@@ -979,14 +985,14 @@ const mods = [
     ]
   },
   {
-    name: "Turkish Airlines Boarding Music Addon",
+    name: "Turkish Airlines Boarding Music Addon 2",
     category: "Audio",
     image: "audio.png",
     iconCover: true,
     updated: "2026-11-08",
     version: "1.0",
     description: "Turkish Airlines boarding music for Aerofly.\nWorks on both Aerofly mobile and PC.\nPut the downloaded file in Zk Mods folder for the plane you want for ex: A321",
-    notice: "Rename the file to call_cabin.tsb",
+    notice: BOARDING_NOTICE,
     links: [
       { label: "Download for Mobile & PC (.tsb)", url: "call_cabin1.tsb" }
     ]
@@ -1056,11 +1062,11 @@ const mods = [
     links: []
   },
   {
-    name: "Turkish Airlines Boarding Music (Piece 3)",
+    name: "Turkish Airlines Boarding Music Addon 3",
     category: "Audio",
     comingSoon: true,
     image: "coming_soon.jpg",
-    description: "Turkish Airlines boarding music, piece 3 of 3. Coming soon!",
+    description: "The third of three Turkish Airlines boarding music tracks. Coming soon!",
     links: []
   }
 ];
