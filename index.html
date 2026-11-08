@@ -771,6 +771,8 @@
    iconCover: add  iconCover: true  when the picture is a plain black icon (like audio.png);
              it gets turned white and centred so it shows on the dark glass.
    maintenance: add  maintenance: true  to switch off this mod's download buttons.
+             Add  maintenance: false  to switch them back ON for one mod, even if its
+             whole category is in maintenance (see MAINTENANCE_CATEGORIES below).
              Add  maintenanceText: "your message"  to show your own text over the buttons
              (use \n for a new line). Without it, it says "Maintenance".
    updated:  the date you last updated the mod, written YEAR-MONTH-DAY
@@ -779,7 +781,7 @@
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
 // Site version: shown at the bottom of the page. It goes up with every update.
-const SITE_VERSION = "3.3";
+const SITE_VERSION = "3.4";
 
 const categories = ["Scenery", "Pushback slots", "Liveries", "Audio"];
 
@@ -788,6 +790,7 @@ const categories = ["Scenery", "Pushback slots", "Liveries", "Audio"];
 const MAINTENANCE_CATEGORIES = ["Scenery"];
 // You can also switch off a single mod by adding  maintenance: true  to it.
 function isMaintenance(mod) {
+  if (mod.maintenance === false) return false;   // switched back on for this one mod
   return !!mod.maintenance || MAINTENANCE_CATEGORIES.includes(mod.category);
 }
 
@@ -878,13 +881,14 @@ const mods = [
   {
     name: "Niš Scenery",
     category: "Scenery",
-    image: "nis-scenery.jpg",
-    updated: "2026-10-23",
-    version: "1.0",
+    maintenance: false,
+    image: "nis-scenery-2.jpg",
+    updated: "2026-11-08",
+    version: "1.1",
     description: "Photo scenery of Niš (Nis), Serbia for Aerofly FS. Free!\nThe .tme file is for mobile and the .zip file is for PC.",
     links: [
-      { label: "Download for Mobile (.tme)", url: "https://drive.google.com/file/d/10sRi5zBV-eSQCRu1mFTCF1muup1sDmpf/view?usp=drive_link" },
-      { label: "Download for PC (.zip)", url: "https://drive.google.com/file/d/1jL5bsrGfQt5zXEztOFZM2ScPpZA_dLCG/view?usp=drive_link" }
+      { label: "Download for Mobile (.tme)", url: "https://drive.google.com/file/d/16WpNFTgeHVT4dgZb6uQ8gdVC379q02ws/view?usp=drive_link" },
+      { label: "Download for PC (.zip)", url: "https://drive.google.com/file/d/1N4Cjv8hVGWzfNOWfqmU05KrVKRvqTEdJ/view?usp=drive_link" }
     ]
   },
   {
