@@ -731,6 +731,57 @@
   .links a:hover::after, .cat:hover::after, .fav-pill:hover::after,
   .links a:focus-visible::after, .cat:focus-visible::after, .fav-pill:focus-visible::after,
   .links a:active::after { opacity: 1; }
+
+  /* Audio installation guide */
+  .guide-wrap { text-align: center; margin-top: 14px; }
+  .guide-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: #fff;
+    padding: 9px 20px;
+    border-radius: 999px;
+    border: 1px solid rgba(124, 198, 238, 0.7);
+    background: linear-gradient(135deg, rgba(124,198,238,0.34) 0%, rgba(124,198,238,0.10) 60%, rgba(124,198,238,0.22) 100%);
+    -webkit-backdrop-filter: var(--lg-blur);
+    backdrop-filter: var(--lg-blur);
+    box-shadow: var(--lg-rim), 0 0 18px rgba(124,198,238,0.25);
+    cursor: pointer;
+    transition: transform 0.4s var(--spring), box-shadow 0.3s ease;
+  }
+  .guide-banner:hover, .guide-banner:focus-visible { transform: scale(1.05); box-shadow: var(--lg-rim), 0 0 26px rgba(124,198,238,0.5); outline: none; }
+  .guide-banner:active { transform: scale(0.96); }
+  .guide-link {
+    display: block;
+    margin: 0 auto 18px;
+    font: inherit;
+    font-weight: 500;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    color: #8fd8ff;
+    background: none;
+    border: 0;
+    padding: 4px 8px;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-shadow: 0 0 14px rgba(124,198,238,0.6);
+    cursor: pointer;
+  }
+  .guide-link:hover, .guide-link:focus-visible { color: #fff; outline: none; }
+  .guide h2 { font-family: var(--serif); font-weight: 600; font-size: 1.7rem; color: #fff; letter-spacing: 0.02em; line-height: 1.25; margin: 0 40px 8px 0; }
+  .guide .lead { color: var(--muted); margin-bottom: 18px; }
+  .guide h3 { font-family: var(--serif); font-weight: 600; font-size: 1.3rem; color: var(--sky); letter-spacing: 0.04em; margin: 22px 0 8px; }
+  .guide h4 { font-weight: 500; color: #fff; letter-spacing: 0.04em; margin: 14px 0 4px; }
+  .guide ul { padding-left: 1.2em; margin: 4px 0 8px; color: #d3e4f0; }
+  .guide li { margin: 3px 0; }
+  .guide code { font-family: ui-monospace, Consolas, monospace; font-size: 0.92em; color: var(--gold); background: rgba(255,255,255,0.08); padding: 1px 7px; border-radius: 7px; }
+  .guide .important { margin: 10px 0 4px; padding: 12px 16px; border-radius: 16px; border: 1px solid rgba(240,196,106,0.5); background: var(--lg-fill-gold); color: #fff3d6; font-size: 0.95rem; }
+  .guide .important strong { color: var(--gold); letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.85rem; }
+  .guide .done { margin-top: 20px; text-align: center; font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -741,6 +792,9 @@
   <p>Select a mod to see its details and downloads</p>
   <div class="search">
     <input id="search" type="search" placeholder="Search mods..." aria-label="Search mods" autocomplete="off">
+  </div>
+  <div class="guide-wrap">
+    <button type="button" class="guide-banner" data-guide>&#9835; Tutorial: how to install the audio</button>
   </div>
 </header>
 
@@ -763,6 +817,42 @@
 <dialog id="modal">
   <button class="close" id="closeBtn" aria-label="Close">&times;</button>
   <div id="modalContent"></div>
+</dialog>
+
+<dialog id="guideModal">
+  <button class="close" id="closeGuide" aria-label="Close">&times;</button>
+  <div class="modal-body guide">
+    <h2>How to Change Boarding Music for Your Aircraft</h2>
+    <p class="lead">Follow these steps to install and use your preferred boarding sounds.</p>
+
+    <h3>1. Install the audio files</h3>
+    <ul>
+      <li>You need the ZK Mods folder to install the audio add-ons.</li>
+      <li>You can install more than one audio file for the same aircraft.</li>
+    </ul>
+    <div class="important"><strong>Important</strong><br>Only rename the example file to the required name. Do not rename or change the <code>.tsb</code> file extension, as this may cause the add-on to stop working.</div>
+
+    <h3>2. Rename the audio files</h3>
+    <p>Use the following file names depending on your aircraft:</p>
+    <h4>Airbus (all models)</h4>
+    <ul><li><code>call_cabin.tsb</code></li><li><code>call_seatbelt_signs.tsb</code></li></ul>
+    <h4>Boeing 737</h4>
+    <ul><li><code>chime_cabin.tsb</code></li><li><code>chime_fasten_seatbelts.tsb</code></li><li><code>chime_ground_call.tsb</code></li></ul>
+    <h4>Boeing 777</h4>
+    <ul><li><code>cabin_call.tsb</code></li></ul>
+    <h4>Boeing 787</h4>
+    <ul><li><code>cabin_call.tsb</code></li></ul>
+
+    <h3>3. How to activate the sounds</h3>
+    <p>Once the add-ons are installed, simply press the corresponding button in the aircraft:</p>
+    <ul>
+      <li><strong>AFT</strong> &ndash; Cabin call sound</li>
+      <li><strong>Seat Belt Sign</strong> &ndash; Seat belt announcement sound</li>
+      <li><strong>Ground Call</strong> &ndash; Ground call sound</li>
+      <li><strong>Chime</strong> &ndash; Cabin chime sound</li>
+    </ul>
+    <p class="done">That's it! Enjoy your new aircraft boarding sounds!</p>
+  </div>
 </dialog>
 
 <script>
@@ -794,7 +884,7 @@
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
 // Site version: shown at the bottom of the page. It goes up with every update.
-const SITE_VERSION = "3.8";
+const SITE_VERSION = "4.0";
 
 const categories = ["Scenery", "Pushback slots", "Liveries", "Audio"];
 
@@ -806,10 +896,6 @@ function isMaintenance(mod) {
   if (mod.maintenance === false) return false;   // switched back on for this one mod
   return !!mod.maintenance || MAINTENANCE_CATEGORIES.includes(mod.category);
 }
-
-// Notice shown on every boarding music mod: the file name depends on the plane.
-// Edit it here once and all boarding music mods change.
-const BOARDING_NOTICE = "Rename the file for the plane you want:\nAirbus: call_cabin.tsb\nBoeing 787: cabin_call.tsb\nBoeing 737: chime_cabin.tsb";
 
 const mods = [
   {
@@ -967,7 +1053,6 @@ const mods = [
     updated: "2026-11-07",
     version: "1.0",
     description: "Turkish Airlines boarding music for Aerofly.\nWorks on both Aerofly mobile and PC.\nPut the downloaded file in Zk Mods folder for the plane you want for ex: A321",
-    notice: BOARDING_NOTICE,
     links: [
       { label: "Download for Mobile & PC (.tsb)", url: "call_cabin.tsb" }
     ]
@@ -992,7 +1077,6 @@ const mods = [
     updated: "2026-11-08",
     version: "1.0",
     description: "Turkish Airlines boarding music for Aerofly.\nWorks on both Aerofly mobile and PC.\nPut the downloaded file in Zk Mods folder for the plane you want for ex: A321",
-    notice: BOARDING_NOTICE,
     links: [
       { label: "Download for Mobile & PC (.tsb)", url: "call_cabin1.tsb" }
     ]
@@ -1004,8 +1088,7 @@ const mods = [
     iconCover: true,
     updated: "2026-11-09",
     version: "1.0",
-    description: "Turkish Airlines boarding music for Aerofly.\nWorks on both Aerofly mobile and PC.\nPut the downloaded file in Zk Mods folder for the plane you want for ex: A321\nYou have to rename the file for the plane you want, as written in the notice below.",
-    notice: BOARDING_NOTICE,
+    description: "Turkish Airlines boarding music for Aerofly.\nWorks on both Aerofly mobile and PC.\nPut the downloaded file in Zk Mods folder for the plane you want for ex: A321\nYou have to rename the file for the plane you want. See the installation guide below.",
     links: [
       { label: "Download for Mobile & PC (.tsb)", url: "tkmusic3.tsb" }
     ]
@@ -1340,6 +1423,11 @@ function openMod(mod) {
   if (mod.price) body.append(el("p", { className: "price", textContent: mod.price }));
   body.append(el("p", { className: "desc", textContent: mod.description }));
   if (mod.notice) body.append(el("div", { className: "notice-box" }, [el("strong", { textContent: "Notice" }), " " + mod.notice]));
+  if (mod.category === "Audio" && !mod.comingSoon) {
+    const g = el("button", { type: "button", className: "guide-link", textContent: "Installation guide \u203a" });
+    g.addEventListener("click", openGuide);
+    body.append(g);
+  }
   let linksBlock = links;
   if (maint && !mod.comingSoon) {
     linksBlock = el("div", { className: "maint-wrap" }, [
@@ -1382,6 +1470,13 @@ document.addEventListener("pointermove", e => {
 });
 
 document.getElementById("closeBtn").addEventListener("click", () => modal.close());
+
+// audio installation guide
+const guideModal = document.getElementById("guideModal");
+function openGuide() { guideModal.showModal(); guideModal.scrollTop = 0; }
+document.querySelectorAll("[data-guide]").forEach(b => b.addEventListener("click", openGuide));
+document.getElementById("closeGuide").addEventListener("click", () => guideModal.close());
+guideModal.addEventListener("click", e => { if (e.target === guideModal) guideModal.close(); });
 modal.addEventListener("keydown", e => {
   if (!galleryStep) return;
   if (e.key === "ArrowLeft") galleryStep(-1);
