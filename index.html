@@ -733,7 +733,7 @@
   .links a:active::after { opacity: 1; }
 
   /* Audio installation guide */
-  .guide-wrap { text-align: center; margin-top: 14px; }
+  .guide-wrap { grid-column: 1 / -1; text-align: center; margin-bottom: 4px; }
   .guide-banner {
     display: inline-flex;
     align-items: center;
@@ -792,9 +792,6 @@
   <p>Select a mod to see its details and downloads</p>
   <div class="search">
     <input id="search" type="search" placeholder="Search mods..." aria-label="Search mods" autocomplete="off">
-  </div>
-  <div class="guide-wrap">
-    <button type="button" class="guide-banner" data-guide>&#9835; Tutorial: how to install the audio</button>
   </div>
 </header>
 
@@ -884,7 +881,7 @@
              Add  paid: true  for Gumroad / paid links (they turn gold).
    ================================================================ */
 // Site version: shown at the bottom of the page. It goes up with every update.
-const SITE_VERSION = "4.0";
+const SITE_VERSION = "4.1";
 
 const categories = ["Scenery", "Pushback slots", "Liveries", "Audio"];
 
@@ -1334,6 +1331,12 @@ function renderGrid() {
   }
 
   const shown = getShown();
+  // the audio tutorial banner only shows inside the Audio section
+  if (currentCategory === "Audio" && !searching) {
+    const b = el("button", { type: "button", className: "guide-banner", textContent: "\u266b Tutorial: how to install the audio" });
+    b.addEventListener("click", openGuide);
+    grid.append(el("div", { className: "guide-wrap" }, [b]));
+  }
   if (shown.length === 0) {
     const msg = searching ? "No mods found."
       : currentCategory === COMING ? "Nothing coming soon right now."
@@ -1474,7 +1477,6 @@ document.getElementById("closeBtn").addEventListener("click", () => modal.close(
 // audio installation guide
 const guideModal = document.getElementById("guideModal");
 function openGuide() { guideModal.showModal(); guideModal.scrollTop = 0; }
-document.querySelectorAll("[data-guide]").forEach(b => b.addEventListener("click", openGuide));
 document.getElementById("closeGuide").addEventListener("click", () => guideModal.close());
 guideModal.addEventListener("click", e => { if (e.target === guideModal) guideModal.close(); });
 modal.addEventListener("keydown", e => {
