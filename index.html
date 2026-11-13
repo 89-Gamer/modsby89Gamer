@@ -894,6 +894,9 @@ function isMaintenance(mod) {
   return !!mod.maintenance || MAINTENANCE_CATEGORIES.includes(mod.category);
 }
 
+// Notice shown on every audio mod (live ones only), above the Installation guide link
+const AUDIO_NOTICE = "Rename the file for your plane \u2192 check the tutorial";
+
 const mods = [
   {
     name: "Helsinki Airport Parking Slots",
@@ -1088,6 +1091,18 @@ const mods = [
     description: "Turkish Airlines boarding music for Aerofly.\nWorks on both Aerofly mobile and PC.\nPut the downloaded file in Zk Mods folder for the plane you want for ex: A321",
     links: [
       { label: "Download for Mobile & PC (.tsb)", url: "tkmusic3.tsb" }
+    ]
+  },
+  {
+    name: "Realistic Cabin Call Ping",
+    category: "Audio",
+    image: "audio.png",
+    iconCover: true,
+    updated: "2026-11-13",
+    version: "1.0",
+    description: "Realistic cabin call ping sound for Aerofly.\nWorks on both Aerofly mobile and PC.\nPut the downloaded file in Zk Mods folder for the plane you want for ex: A321",
+    links: [
+      { label: "Download for Mobile & PC (.tsb)", url: "realping.tsb" }
     ]
   },
   {
@@ -1427,6 +1442,7 @@ function openMod(mod) {
   body.append(el("p", { className: "desc", textContent: mod.description }));
   if (mod.notice) body.append(el("div", { className: "notice-box" }, [el("strong", { textContent: "Notice" }), " " + mod.notice]));
   if (mod.category === "Audio" && !mod.comingSoon) {
+    body.append(el("div", { className: "notice-box" }, [el("strong", { textContent: "Notice" }), " " + AUDIO_NOTICE]));
     const g = el("button", { type: "button", className: "guide-link", textContent: "Installation guide \u203a" });
     g.addEventListener("click", openGuide);
     body.append(g);
